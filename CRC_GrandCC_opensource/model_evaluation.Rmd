@@ -1,0 +1,63 @@
+---
+title: "performance"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(caret)
+```
+
+
+```{r}
+load("./data/pred_cms.RData")
+load("./data/cms_labels.RData")
+
+dataset_list <- c("gse14333", "gse17536", "gse37892", "gse20916", "gse13294", "gse13067", "gse2109",  "gse35896", "petacc3",  "gse39582", "kfsyscc")
+
+res_all <- lapply(1:length(pred_cms), function(i) {
+  res <- lapply(1:(length(dataset_list)+1), function(x) {
+    if(x > length(dataset_list)) {
+      val_lab <- labels$all
+    } else {
+        val_lab <- labels[[x]]
+      }
+  
+  pred_lab <- pred_cms[[i]][[x]]
+  
+  confusionMatrix(pred_lab, val_lab)
+  
+  })
+  
+  names(res) <- c(dataset_list, "all")
+  res
+})
+names(res_all) <- names(pred_cms)
+```
+
+
+```{r}
+Methods <- c("GNN", "DeepCC", "Random Forest", "SVM", "Logistic")
+
+names(res_all) <- Methods
+
+eval_class <- function(x) {
+  c(Accuracy=mean(x$overall[1]),
+    `Balanced Accuracy`=mean(x$byClass[, "Balanced Accuracy"]),
+    Sensitivity=mean(x$byClass[, "Sensitivity"]),
+    Specificity=mean(x$byClass[, "Specificity"])
+    )
+}
+
+eval.res <- lapply(res_all, function(cfm) {
+  df <- sapply(cfm, function(x) {
+    eval_class(x)
+  })
+  df <- t(df)
+  rownames(df) <- toupper(rownames(df))
+  df
+})
+names(eval.res) <- Methods
+
+print(eval.res)
+```
