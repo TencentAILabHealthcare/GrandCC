@@ -130,7 +130,7 @@ N |	0.13789913 | 0.33324537 | 0.35867894 | 0.17017654 | 2 | 2
 + The column "CMS network" is the ground-truth class.
 + For the prediction of your own data, the result file will not include the last column "CMS network" because 
 we don't require the ground-truth labels from you.
-
+ 
 ### Evaluation：
 Please refer to model_evaluation.Rmd file to evaluate the performance.
 
