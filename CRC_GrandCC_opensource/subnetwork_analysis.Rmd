@@ -1,0 +1,66 @@
+---
+title: "subnetwork_analysis"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(org.Hs.eg.db)
+library(tidyverse)
+```
+
+```{r}
+load("../data/node_edge_data.RData")
+```
+
+```{r}
+gene_convert <- function(x) AnnotationDbi::select(org.Hs.eg.db,
+                      keys= x,
+                      columns=c("SYMBOL"), 
+                      keytype="ENTREZID" )$SYMBOL
+
+for (i in 1:4) {
+  data <- node_weight[[i]]
+  node_data <- data
+  node_data$gene <- as.character(node_data$gene)
+  cut_value <- 0.3
+  tmp <- data[order(data$weight, decreasing = T),]
+  gene_list <- tmp$gene[1:200]
+  edge_weight <- edge_weight_normal[[i]]
+  
+  df <- edge_weight[edge_weight$gene1 %in% gene_list | edge_weight$gene2 %in% gene_list,]
+  df <- df[df$weight > cut_value, ]
+  
+  gene_list1 <- unique(c(df$gene1, df$gene2))
+  df1 <- edge_weight[edge_weight$gene1 %in% gene_list1 | edge_weight$gene2 %in% gene_list1,]
+  df1 <- df1[df1$weight > cut_value, ]
+
+  while (nrow(df1) != nrow(df)) {
+    df <- df1
+    gene_list1 <- unique(c(df$gene1, df$gene2))
+    df1 <- edge_weight[edge_weight$gene1 %in% gene_list1 | edge_weight$gene2 %in% gene_list1,]
+    df1 <- df1[df1$weight > cut_value, ]
+  }
+  
+  load("../data/symbol2name.RData")
+  s2n <- symbol2name[,-1]
+  colnames(s2n)[1] <- "gene"
+  
+  top_node <- node_data[which(node_data$gene %in% gene_list1),]
+  top_node <- top_node[order(top_node$weight, decreasing = T),]
+  top_node$gene <- gene_convert(as.character(top_node$gene))
+  top_node <- left_join(top_node, s2n, by = "gene")
+  top_node$corresponding_subtypes <- paste0("CMS", i)
+  assign(paste0("top_node", i), top_node[1:10,])
+}
+```
+
+\newpage
+# Top 10 gene in the subnetwork with the highest importance
+```{r}
+knitr::kable(top_node1, format = "markdown", caption = "CMS1")
+knitr::kable(top_node2, format = "markdown", caption = "CMS2")
+knitr::kable(top_node3, format = "markdown", caption = "CMS3")
+knitr::kable(top_node4, format = "markdown", caption = "CMS4")
+```
+
