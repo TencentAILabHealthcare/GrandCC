@@ -191,3 +191,17 @@ NKI_11 | 0.060146123 | 0.13140255 | 0.47476345 | 0.30161282 | 0.03207499 | 2 | 3
 + The column "label" is the ground-truth class.
 + For the prediction of your own data, the result file will not include the last column "label" because 
 we don't require the ground-truth labels from you.
+
+### Disclaimer
+
+This tool is for research purpose and not approved for clinical use.
+
+This is not an official Tencent product.
+
+### Copyright
+
+This tool is developed in Tencent AI Lab. 
+
+The copyright holder for this project is Tencent AI Lab. 
+
+All rights reserved.
