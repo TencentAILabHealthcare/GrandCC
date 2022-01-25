@@ -5,11 +5,7 @@ In this project, we develop a GrandCC model based on a graph attention network t
 The model was validated on two different cancers, including the CMS subtyping of Colorectal  cancer (CRC) 
 and the PAM50 classification of breast cancer.
 
-<<<<<<< HEAD
-=======
-The model was deployed as an easy-to-use online tool, please try the website https://gene.ai.tencent.com/MolecularSubtyping.
 
->>>>>>> 6457a9a143931d04a9e5836f67e3dd3204c7b39d
 ## Requirements
 
 ```
